@@ -35,9 +35,9 @@ for filename in os.listdir(current_dir):
 #organize archives files into archive folder
 for filename in os.listdir(current_dir):
       if filename.endswith((".zip", ".rar")):
-        if not os.path.exists("Documents"):
-            os.mkdir('Documents')
-        shutil.copy(filename, 'Documents')
+        if not os.path.exists("Archive"):
+            os.mkdir('Archive')
+        shutil.copy(filename, 'Archive')
         os.remove(filename)
         
 #organize codes' files into code folder
