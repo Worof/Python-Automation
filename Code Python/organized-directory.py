@@ -1,10 +1,34 @@
 import os
 import shutil
-import logging  
 import datetime  
+from tqdm import tqdm
 
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
+
+## File extensions mapping ##
+
+file_ext_mapping = {
+  #Images mapping
+  (".png", ".jpg", ".jpeg", ".gif", ".tif", ".bmp") : 'Images',
+  #Videos mapping
+  (".mp4", ".mov", ".wmv", ".flv", ".mkv", ".avi"): 'Videos',
+  #Docs Mapping
+  (".pdf", ".doc", ".docx", ".html", ".htm", ".odt", ".xls", ".xlsx", ".ods", ".ppt", ".pptx", ".txt"): 'Documents',
+  #Archive Mapping
+  (".zip", ".rar"): 'Archive',
+  #Python code mapping
+    (".py",): "Code Python",
+    # C code mapping
+    (".c",): "Code C",
+    #Music mapping
+    (".mp3", ".wav", ".flac", ".ogg"): "Music",
+    #Spreadsheets mapping
+    (".csv", ".xlsb"): "Spreadsheets"
+  
+  
+  
+}
 
 ##File Renaming##
 
@@ -14,73 +38,19 @@ def rename_with_date(filename):
     basename, extension = os.path.splitext(filename)
     return f"{basename}_{timestamp}{extension}"
 
-#Organize images into image folder
-
-for filename in os.listdir(current_dir):
-      if filename.endswith((".png", ".jpg", ".jpeg", ".gif", ".tif", ".bmp")):
-        if not os.path.exists("Images"):
-            os.mkdir('Images')
-        new_filename = rename_with_date(filename)
-        shutil.move(filename, os.path.join("Images", new_filename))
-        
-        
-#organize video files into video folder
-for filename in os.listdir(current_dir):
-      if filename.endswith((".mp4", ".mov", ".wmv", ".flv", ".mkv", ".avi")):
-        if not os.path.exists("Videos"):
-            os.mkdir('Videos')
-        new_filename = rename_with_date(filename)
-        shutil.move(filename, os.path.join("Videos", new_filename))
-        
-#organize docs files into docs folder
-for filename in os.listdir(current_dir):
-      if filename.endswith((".pdf", ".doc", ".docx", ".html", ".htm", ".odt", ".xls", ".xlsx", ".ods", ".ppt", ".pptx", ".txt")):
-        if not os.path.exists("Documents"):
-            os.mkdir('Documents')
-        new_filename = rename_with_date(filename)
-        shutil.move(filename, os.path.join("Documents", new_filename))
+#Organize files based on their types, & showing the organization progress
 
 
-#organize archives files into archive folder
-for filename in os.listdir(current_dir):
-      if filename.endswith((".zip", ".rar")):
-        if not os.path.exists("Archive"):
-            os.mkdir('Archive')
-        new_filename = rename_with_date(filename)
-        shutil.move(filename, os.path.join("Archive", new_filename))
-        
-#organize python codes' files into code folder
-for filename in os.listdir(current_dir):
-      if filename.endswith((".py")):
-        if not os.path.exists("Code Python"):
-            os.mkdir('Code Python')
-        new_filename = rename_with_date(filename)
-        shutil.move(filename, os.path.join("Code Python", new_filename))
-
-
-#organize C codes' files into code folder
-for filename in os.listdir(current_dir):
-      if filename.endswith((".c")):
-        if not os.path.exists("Code C"):
-            os.mkdir('Code C')
-        new_filename = rename_with_date(filename)
-        shutil.move(filename, os.path.join("Code C", new_filename))
+for filename in tqdm(os.listdir(current_dir), desc = 'Organized Files Are in Progress', unit ="file"):
+  for extensions , folder_name in file_ext_mapping.items():
+    if filename.endswith(extensions):
+      destination_folder = os.path.join(current_dir, folder_name)  #Construct full path
+      if not os.path.exists(destination_folder):
+        os.makedirs(folder_name)
+      new_filename = rename_with_date(filename)
+      src_path = os.path.join(current_dir, filename)
+      dst_path = os.path.join(destination_folder, new_filename)
+      shutil.move(src_path, dst_path)
         
         
-#organize music files into music folder
-for filename in os.listdir(current_dir):
-      if filename.endswith((".mp3", ".wav", ".flac", ".ogg")):
-        if not os.path.exists("Music"):
-            os.mkdir('Music')
-        new_filename = rename_with_date(filename)
-        shutil.move(filename, os.path.join("Music", new_filename))
-        
-#organize spreadsheets into music folder
-for filename in os.listdir(current_dir):
-      if filename.endswith((".csv", ".xlsb")):
-        if not os.path.exists("Spreadsheets"):
-            os.mkdir('Spreadsheets')
-        new_filename = rename_with_date(filename)
-        shutil.move(filename, os.path.join("Spreadsheets", new_filename))      
-
-
+      
