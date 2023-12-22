@@ -27,6 +27,16 @@ Each script serves a specific purpose and can be used independently or in combin
 - **Description**: Resizes images in the current directory to a specified size and saves them in a designated output folder.
 - **Usage**: Run the script, input the desired image size and output folder when prompted.
 
+### 4. PDF to Audio Converter
+
+- **Description**: Converts text from a PDF file into an audio MP3 file using text-to-speech technology. This script is useful for creating audiobooks or for auditory learning.
+- **Usage**:
+  - Run the script and input the path to the PDF file.
+  - The script will process each page of the PDF and convert it into spoken words, saving the output as an MP3 file.
+- **Dependencies**: Requires `pdfplumber` for PDF text extraction, `pyttsx3` for text-to-speech conversion, and `tqdm` for progress indication.
+- **Setup**:
+  - Ensure all dependencies are installed.
+
 ### Running on PythonAnywhere
 
 PythonAnywhere is an online IDE and web hosting service based on Python. It allows you to run Python scripts continuously at scheduled intervals. Here's how to set up the Water Reminder script on PythonAnywhere:
