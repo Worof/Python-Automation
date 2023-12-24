@@ -21,6 +21,8 @@ def process_text_to_audio(text, file_name):
         
         
 #converting the book into audiobook in chunks 
+
+
 try:
     with pdfplumber.open(pdfFile) as pdf:
         total_pages = len(pdf.pages)
