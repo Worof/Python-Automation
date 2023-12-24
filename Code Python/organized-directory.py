@@ -7,6 +7,7 @@ from tqdm import tqdm
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
 
+
 file_ext_mapping = {
         # Images mapping
         (".png", ".jpg", ".jpeg", ".gif", ".tif", ".bmp"): 'Images',
