@@ -18,6 +18,8 @@ def process_text_to_audio(text, file_name):
         engine.runAndWait()
     except Exception as e:
         print(f"An error occurred in text-to-speech conversion: {e}")
+        
+        
 #converting the book into audiobook in chunks 
 try:
     with pdfplumber.open(pdfFile) as pdf:
