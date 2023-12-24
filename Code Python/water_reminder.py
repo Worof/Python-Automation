@@ -14,6 +14,7 @@ with open(file, mode='r') as f:
     quotes = [line.strip() for line in f if line.strip()]
 
 #Making sure that the list is not empty
+
 if not quotes:
     raise ValueError("The quotes file is empty.")
 
