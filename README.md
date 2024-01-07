@@ -11,6 +11,11 @@ Each script serves a specific purpose and can be used independently or in combin
 ### 1. File Organizer
 
 - **Description**: This script organizes files in the current directory into folders based on their file types (e.g., Images, Videos, Documents).
+- **New Features**:
+  - **Customizable File Extension Mapping**: Users can now specify file extensions for each category via command-line arguments.
+  - **Dry Run Option**: Added functionality to simulate file organization without making any actual changes.
+  - **Logging**: The script now logs its actions, providing a detailed report of the files moved.
+
 - **Usage**: Run the script in a directory to automatically sort all files into categorized folders.
 
 ### 2. Water Reminder
