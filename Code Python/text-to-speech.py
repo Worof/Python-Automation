@@ -2,19 +2,20 @@ import pyttsx3
 import pdfplumber
 from tqdm import tqdm
 
-pdfFile = 'great-expectations.pdf'
+pdfFile = '1984.pdf'
+audio_file = '1984-audiobook.mp3'
 
 
 #Initialize text-to-speech engine
 engine = pyttsx3.init()
 #Set the speed of the speech
-engine.setProperty('rate', 150)  
+engine.setProperty('rate', 120)  
 
 
 #saving the audiobook in a specific file & handeling errors
-def process_text_to_audio(text, file_name):
+def process_text_to_audio(text):
     try:
-        engine.save_to_file(text, file_name)
+        engine.save_to_file(text, audio_file)
         engine.runAndWait()
     except Exception as e:
         print(f"An error occurred in text-to-speech conversion: {e}")
@@ -27,12 +28,16 @@ try:
     with pdfplumber.open(pdfFile) as pdf:
         total_pages = len(pdf.pages)
         print(f"Processing {total_pages} pages...")
+        full_text = ''
 
         for i, page in enumerate(tqdm(pdf.pages, desc='Converting Pages into Audio')):
             text = page.extract_text()
             if text:
-                audio_file = f'great-expectations_page_{i+1}.mp3'
-                process_text_to_audio(text, audio_file)
+                full_text += text + ''
+                
+            
+        process_text_to_audio(full_text)
+        
         print('Finished Processing Your File...ENJOY!')
 
 except FileNotFoundError:
