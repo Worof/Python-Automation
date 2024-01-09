@@ -39,7 +39,6 @@ Each script serves a specific purpose and can be used independently or in combin
   - **User Input for File Names**: Users can specify the PDF and output audio file names.
   - **Voice Customization**: Users can choose from available voices (male/female) and accents supported by the text-to-speech engine.
   - **Audio Quality Settings**: Options to set the audio format (e.g., MP3, WAV) and bitrate (e.g., 192k, 256k) for the output file.
-  - **PDF Text Preprocessing**: Includes text preprocessing to handle or clean anomalies in PDF text extraction, like removing headers, footers, or unwanted characters.
 - **Usage**:
   - Run the script and input the path to the PDF file.
   - The script will process each page of the PDF and convert it into spoken words, saving the output as an MP3 file.
