@@ -98,29 +98,39 @@ def rename_with_date(filename):
         basename, extension = os.path.splitext(filename)
         return f"{basename}_{timestamp}{extension}"
     
+interactive_mode_enabled = input("Enable interactive mode? (yes/no): ").lower() == "yes"
+    
 if args['undo']:
     undo_last_operation()
 else:
     for filename in tqdm(os.listdir(current_dir), desc='Organized Files Are in Progress', unit="file"):
-     file_extension = os.path.splitext(filename)[1].lower()
-     for  folder_name, extensions in file_ext_mapping.items():
-             if file_extension in [ext.lower() for ext in extensions]:
+        file_extension = os.path.splitext(filename)[1].lower()
+        for folder_name, extensions in file_ext_mapping.items():
+            if file_extension in [ext.lower() for ext in extensions]:
                 destination_folder = os.path.join(current_dir, folder_name)
                 if not os.path.exists(destination_folder):
-                     os.makedirs(destination_folder)
-                logging.info(f"Created directory: {destination_folder}")
+                    os.makedirs(destination_folder)
                 new_filename = rename_with_date(filename)
-                src_path = os.path.join(current_dir, filename)
                 dst_path = os.path.join(destination_folder, new_filename)
+                if os.path.exists(dst_path) and interactive_mode_enabled:
+                    print(f"File '{dst_path}' already exists.")
+                    action = input("Do you want to (o)verwrite or (s)kip? [o/s]: ").lower()
+                    while action not in ['o', 's']:
+                        print("Invalid input.")
+                        action = input("Do you want to (o)verwrite or (s)kip? [o/s]: ").lower()
+                    if action == 's':
+                        print(f"Skipping '{filename}'.")
+                        continue
+                    elif action == 'o':
+                        confirm_overwrite = input(f"Are you sure you want to overwrite '{dst_path}'? [y/n]: ").lower()
+                        if confirm_overwrite != 'y':
+                            print(f"Skipping '{filename}'.")
+                            continue
                 if dry_run:
-                 print(f"[DRY RUN] Would move '{src_path}' to '{dst_path}'")
-                
-                try:
-                 shutil.move(src_path, dst_path)
-                 logging.info(f"Moved from '{src_path}' to '{dst_path}'")
-                except Exception as e:
-                    logging.error(f"Failed to move '{src_path}' to '{dst_path}'")
-
+                    print(f"[DRY RUN] Would move '{filename}' to '{dst_path}'")
+                else:
+                    shutil.move(os.path.join(current_dir, filename), dst_path)
+                    logging.info(f"Moved from '{os.path.join(current_dir, filename)}' to '{dst_path}'")
 
 
 
