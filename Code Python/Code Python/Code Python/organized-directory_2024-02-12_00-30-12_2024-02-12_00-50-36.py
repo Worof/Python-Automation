@@ -16,6 +16,7 @@ def parse_arguments():
     parser.add_argument('--c', nargs='+', help='Extensions for video files', default=[".c"])
     parser.add_argument('--music', nargs='+', help='Extensions for video files', default=[".mp3", ".wav", ".flac", ".ogg"])
     parser.add_argument('--csv', nargs='+', help='Extensions for video files', default=[".csv", ".xlsb"])
+    parser.add_argument('--undo', action='store_true', help='Undo the last organization operation') 
     return vars(parser.parse_args())
 
 args = parse_arguments()
@@ -31,6 +32,43 @@ def get_dry_run_choice():
 
 dry_run = get_dry_run_choice()
 
+#adding an undo functionality feature
+def undo_last_operation(logfile='file_organizer.log'):
+    move_operations = []
+    with open(logfile, 'r') as f:
+        # Reverse read the lines to get the move operations in reverse order
+        for line in reversed(f.readlines()):
+            if "INFO: Moved from" in line:
+                # Extract the source and destination paths
+                try:
+                    parts = line.strip().split("'")
+                    src = parts[1]  # The source path is the second element in the list
+                    dst = parts[3]  # The destination path is the fourth element
+                    move_operations.append((dst, src))  # Append as (destination, source) to reverse the move
+                except IndexError:
+                    # Skip lines that don't fit the expected format
+                    continue
+
+    # Perform the undo operations
+    for src, dst in move_operations:
+        try:
+            if not os.path.exists(os.path.dirname(dst)):
+                os.makedirs(os.path.dirname(dst))
+            shutil.move(src, dst)
+            print(f"Successfully reverted '{src}' to '{dst}'")
+            logging.info(f"UNDO|{src}|{dst}")
+        except Exception as e:
+            print(f"Failed to revert '{src}' to '{dst}': {e}")
+            logging.error(f"UNDO FAILED|{src}|{dst}")
+
+
+
+
+
+
+
+
+                
 
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
@@ -59,10 +97,13 @@ def rename_with_date(filename):
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         basename, extension = os.path.splitext(filename)
         return f"{basename}_{timestamp}{extension}"
-
-for filename in tqdm(os.listdir(current_dir), desc='Organized Files Are in Progress', unit="file"):
-    file_extension = os.path.splitext(filename)[1].lower()
-    for  folder_name, extensions in file_ext_mapping.items():
+    
+if args['undo']:
+    undo_last_operation()
+else:
+    for filename in tqdm(os.listdir(current_dir), desc='Organized Files Are in Progress', unit="file"):
+     file_extension = os.path.splitext(filename)[1].lower()
+     for  folder_name, extensions in file_ext_mapping.items():
              if file_extension in [ext.lower() for ext in extensions]:
                 destination_folder = os.path.join(current_dir, folder_name)
                 if not os.path.exists(destination_folder):
@@ -79,6 +120,8 @@ for filename in tqdm(os.listdir(current_dir), desc='Organized Files Are in Progr
                  logging.info(f"Moved from '{src_path}' to '{dst_path}'")
                 except Exception as e:
                     logging.error(f"Failed to move '{src_path}' to '{dst_path}'")
+
+
 
 
 
