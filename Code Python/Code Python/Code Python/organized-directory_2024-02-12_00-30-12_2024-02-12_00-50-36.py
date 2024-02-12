@@ -60,7 +60,37 @@ def undo_last_operation(logfile='file_organizer.log'):
         except Exception as e:
             print(f"Failed to revert '{src}' to '{dst}': {e}")
             logging.error(f"UNDO FAILED|{src}|{dst}")
+            
+# Define sensitive criteria
+sensitive_extensions = ['.key', '.pem', '.env']
 
+def is_sensitive_file(filename):
+    if any(filename.endswith(ext) for ext in sensitive_extensions):
+        return True
+    return False
+
+def handle_sensitive_file(filename, src_path):
+    print(f"\nSensitive file detected: {filename}")
+    print("This file is flagged as sensitive due to its type, name, or location.")
+    action = input("Choose an action - (V)iew, (R)ename, (S)kip: ").lower()
+    
+    if action == 'v':
+        # Adjust based on your file types
+        with open(src_path, 'r') as f:
+            print(f.read())
+        return handle_sensitive_file(filename, src_path)
+    
+    elif action == 'r':
+        new_name = input("Enter new name for the file: ")
+        return os.path.join(os.path.dirname(src_path), new_name)
+    
+    elif action == 's':
+        print(f"Skipping {filename}.\n")
+        return None
+    
+    else:
+        print("Invalid option selected.")
+        return handle_sensitive_file(filename, src_path)
 
 
 
