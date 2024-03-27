@@ -1,21 +1,16 @@
 import os
 import shutil
 import datetime
-from tqdm import tqdm
+#from tqdm import tqdm
 import logging
 import argparse
+#import errno
+import json 
 
 #adding command line arguments
 def parse_arguments():
     parser = argparse.ArgumentParser(description = 'File Organization Script')
-    parser.add_argument('--images', nargs='+', help='Extensions for image files', default=[".png", ".jpg", ".jpeg", ".gif", ".tif", ".bmp"])
-    parser.add_argument('--videos', nargs='+', help='Extensions for video files', default=[".mp4", ".mov", ".wmv", ".flv", ".mkv", ".avi"])
-    parser.add_argument('--docs', nargs='+', help='Extensions for video files', default=[".pdf", ".doc", ".docx", ".html", ".htm", ".odt", ".xls", ".xlsx", ".ods", ".ppt", ".pptx", ".txt"])
-    parser.add_argument('--archive', nargs='+', help='Extensions for image files', default=[".zip", ".rar"])
-    parser.add_argument('--py', nargs='+', help='Extensions for video files', default=[".py"])
-    parser.add_argument('--c', nargs='+', help='Extensions for video files', default=[".c"])
-    parser.add_argument('--music', nargs='+', help='Extensions for video files', default=[".mp3", ".wav", ".flac", ".ogg"])
-    parser.add_argument('--csv', nargs='+', help='Extensions for video files', default=[".csv", ".xlsb"])
+    parser.add_argument('--config', type=str, help='Path to the configuration file', default='config.json')
     parser.add_argument('--undo', action='store_true', help='Undo the last organization operation') 
     return vars(parser.parse_args())
 
@@ -24,6 +19,19 @@ args = parse_arguments()
 #configure your logging
 logging.basicConfig(filename='file_organizer.log', level= logging.INFO,
                      format='%(asctime)s %(levelname)s: %(message)s')
+#load configuration from the json file
+def load_configuration(config_path):
+    if not os.path.exists(config_path):
+        logging.error(f"Configuration file not found at {config_path}")
+        print(f"Configuration file not found at {config_path}. Using default settings.")
+        return None
+    try:
+        with open(config_path, 'r') as config_file:
+            return json.load(config_file)
+    except json.JSONDecodeError as e:
+        logging.error(f"Error decoding JSON from the configuration file: {e}")
+        print(f"Error decoding JSON from the configuration file. Please check the file format.")
+        return None
 
 #adding a dry run option for functionality
 def get_dry_run_choice():
@@ -91,6 +99,14 @@ def handle_sensitive_file(filename, src_path):
     else:
         print("Invalid option selected.")
         return handle_sensitive_file(filename, src_path)
+    
+    
+#check the disk space 
+def check_disk_space(file_path, destination_dir):
+    total, used, free = shutil.disk_usage(destination_dir)
+    file_size = os.path.getsize(file_path)
+    return file_size <= free
+
 
 
 
@@ -104,7 +120,7 @@ def handle_sensitive_file(filename, src_path):
 current_dir = os.path.dirname(os.path.realpath(__file__))
 
 
-file_ext_mapping = {
+file_ext_mapping = load_configuration(args['config']) or {
         # Images mapping
         'Images': args['images'],
         # Videos mapping
@@ -133,35 +149,43 @@ interactive_mode_enabled = input("Enable interactive mode? (yes/no): ").lower() 
 if args['undo']:
     undo_last_operation()
 else:
-    for filename in tqdm(os.listdir(current_dir), desc='Organized Files Are in Progress', unit="file"):
+    for filename in os.listdir(current_dir):
         file_extension = os.path.splitext(filename)[1].lower()
+        src_path = os.path.join(current_dir, filename)
         for folder_name, extensions in file_ext_mapping.items():
             if file_extension in [ext.lower() for ext in extensions]:
                 destination_folder = os.path.join(current_dir, folder_name)
                 if not os.path.exists(destination_folder):
                     os.makedirs(destination_folder)
-                new_filename = (filename)
-                dst_path = os.path.join(destination_folder, new_filename)
+                dst_path = os.path.join(destination_folder, filename)
+
                 if os.path.exists(dst_path) and interactive_mode_enabled:
-                    print(f"File '{dst_path}' already exists.")
-                    action = input("Do you want to (o)verwrite or (s)kip? [o/s]: ").lower()
-                    while action not in ['o', 's']:
-                        print("Invalid input.")
-                        action = input("Do you want to (o)verwrite or (s)kip? [o/s]: ").lower()
+                    #handle filename conflict
+                    action = input(f"File '{dst_path}' already exists. Do you want to (o)verwrite or (s)kip? [o/s]: ").lower()
                     if action == 's':
                         print(f"Skipping '{filename}'.")
                         continue
-                    elif action == 'o':
-                        confirm_overwrite = input(f"Are you sure you want to overwrite '{dst_path}'? [y/n]: ").lower()
-                        if confirm_overwrite != 'y':
-                            print(f"Skipping '{filename}'.")
-                            continue
+                    elif action == 'o' and not input(f"Are you sure you want to overwrite '{dst_path}'? [y/n]: ").lower() == 'y':
+                        print(f"Skipping '{filename}'.")
+                        continue
+
                 if dry_run:
                     print(f"[DRY RUN] Would move '{filename}' to '{dst_path}'")
-                else:
-                    shutil.move(os.path.join(current_dir, filename), dst_path)
-                    logging.info(f"Moved from '{os.path.join(current_dir, filename)}' to '{dst_path}'")
+                    continue
 
+                if not check_disk_space(src_path, destination_folder):
+                    print(f"Not enough disk space to move '{filename}' to '{destination_folder}'.")
+                    logging.error(f"Disk space error: Not enough space for '{filename}' in '{destination_folder}'.")
+                    continue
 
+                try:
+                    shutil.move(src_path, dst_path)
+                    logging.info(f"Moved from '{src_path}' to '{dst_path}'")
+                except PermissionError:
+                    print(f"Permission denied: Unable to move '{filename}' to '{dst_path}'.")
+                    logging.error(f"PermissionError: Failed to move '{filename}' to '{dst_path}'.")
+                except Exception as e:
+                    print(f"Unexpected error moving '{filename}' to '{dst_path}': {e}")
+                    logging.error(f"Unexpected error: {filename} to {dst_path}: {e}")
 
-
+print("File organization complete.")

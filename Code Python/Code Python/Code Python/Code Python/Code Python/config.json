@@ -1,0 +1,12 @@
+{
+    "Images": [".png", ".jpg", ".jpeg", ".gif", ".tif", ".bmp"],
+    "Videos": [".mp4", ".mov", ".wmv", ".flv", ".mkv", ".avi"],
+    "Documents": [".pdf", ".doc", ".docx", ".html", ".htm", ".odt", ".xls", ".xlsx", ".ods", ".ppt", ".pptx", ".txt"],
+    "Archives": [".zip", ".rar", ".tar", ".7z"],
+    "PythonScripts": [".py"],
+    "CPrograms": [".c", ".h"],
+    "Music": [".mp3", ".wav", ".flac", ".ogg"],
+    "Spreadsheets": [".csv", ".xls", ".xlsx", ".xlsb"],
+    "Applications": [".exe", ".msi", ".dmg", ".apk"],
+    "Programs": [".bat", ".sh", ".js", ".php"]
+}
