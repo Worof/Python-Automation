@@ -9,7 +9,7 @@ This project consists of several Python scripts 📜 designed to automate variou
 ### 1. File Organizer 🗂️
 
 - **Description**: Organizes files in the current directory into folders based on their file types (e.g., Images 🖼️, Videos 🎬, Documents 📄).
-- **New Features**:
+- **Features**:
   - **Customizable File Extension Mapping**: Specify file extensions for each category via command-line arguments. 🎛️
   - **Dry Run Option**: Simulate file organization without making any actual changes. 🔄
   - **Logging**: Logs actions, providing a detailed report of the files moved. 📋
@@ -51,6 +51,31 @@ Set up the Water Reminder script on PythonAnywhere for continuous, scheduled exe
 2. **Upload Your Script**: Including the `water_reminder.py` and the reminder text file. 📤
 3. **Install Dependencies**: Use the Bash console to install required libraries. 📦
 4. **Schedule the Script**: For your desired frequency. 🕒
+
+### 5. Port Scanner 🌐
+**Description:** Scans a range of ports on a given host to identify open ports.
+
+**Features:**
+- Multi-threaded scanning: Utilizes multiple threads to scan ports faster.
+- Verbose Output: Provides detailed information about the scanning process.
+- Save Results: Ability to save the scanning results in JSON or CSV format.
+- Rate Limiting: Includes an option to set a delay between scan requests to reduce network strain.
+
+**Usage:**
+1. To scan ports on a host, run the script with the host and port range:
+`python port_scanner.py <host> <start_port> <end_port>`
+
+2. Additional arguments:
+- `--timeout`: Set a custom timeout for each port scan.
+- `--threads`: Specify the number of threads to use.
+- `--verbose`: Enable detailed output.
+- `--output`: File to save the scan results.
+- `--format`: Choose the format (json or csv) for the output file.
+- `--delay`: Set a delay between scans for rate limiting.
+
+**Example:**
+`python port_scanner.py localhost 1 1024 --verbose --output results.json --format json`
+
 
 ## Contributing 🤝
 
