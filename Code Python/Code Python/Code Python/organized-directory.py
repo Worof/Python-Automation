@@ -123,10 +123,10 @@ file_ext_mapping = {
         "Spreadsheets": args['csv']
     }
 
-def rename_with_date(filename):
+"""def rename_with_date(filename):
         timestamp = datetime.datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
         basename, extension = os.path.splitext(filename)
-        return f"{basename}_{timestamp}{extension}"
+        return f"{basename}_{timestamp}{extension}" """
     
 interactive_mode_enabled = input("Enable interactive mode? (yes/no): ").lower() == "yes"
     
@@ -140,7 +140,7 @@ else:
                 destination_folder = os.path.join(current_dir, folder_name)
                 if not os.path.exists(destination_folder):
                     os.makedirs(destination_folder)
-                new_filename = rename_with_date(filename)
+                new_filename = (filename)
                 dst_path = os.path.join(destination_folder, new_filename)
                 if os.path.exists(dst_path) and interactive_mode_enabled:
                     print(f"File '{dst_path}' already exists.")
