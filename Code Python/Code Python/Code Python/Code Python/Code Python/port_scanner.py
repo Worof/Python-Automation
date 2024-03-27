@@ -13,21 +13,30 @@ print_lock = threading.Lock() #lock object to prevent multiple threads from prin
 
 
 ###function to scan all the open ports and adds them to the list of open ports###
-def scan_port(host, port, timeout, open_ports, verbose, delay):
+def scan_port(host, port, timeout, open_ports, verbose, delay, s):
+    """
+    Scan a single port on the given host.
+
+    :param host: The target host's IP or hostname.
+    :param port: The port number to scan.
+    :param timeout: Timeout for each port scan.
+    :param open_ports: A list to hold the open ports.
+    :param verbose: Flag to enable verbose output.
+    :param delay: Delay between scans for rate limiting.
+    :param s: Reusable socket object.
+    """
     time.sleep(delay)
     try: 
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.settimeout(1)
+        s.settimeout(timeout)
         result = s.connect_ex((host, port))
         if result == 0:
-            with print_lock: #to ensure that only one thread prints its output to the console at a time
+            with print_lock:
                 open_ports.append(port)
                 if verbose:
                     print(f"Port {port} is open on {host}.")
-            s.close()
     except socket.error as e:
         if verbose:
-                print(f"Error scanning port {port}: {str(e)}")
+            print(f"Error scanning port {port}: {str(e)}")
 
         
     
@@ -36,17 +45,41 @@ def scan_port(host, port, timeout, open_ports, verbose, delay):
     
 ##this function works as a worker for the threading to continuously takes a port from the queue and uses scan_port to check if it's open##
 def worker(host, port_queue, timeout, open_ports, verbose, delay):
+    """
+    Worker function for threading, pulls ports from queue and scans them.
+
+    :param host: The target host's IP or hostname.
+    :param port_queue: Queue of ports to scan.
+    :param timeout: Timeout for each port scan.
+    :param open_ports: A list to hold the open ports.
+    :param verbose: Flag to enable verbose output.
+    :param delay: Delay between scans for rate limiting.
+    """
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     while not port_queue.empty():
         port = port_queue.get()
-        scan_port(host, port, timeout, open_ports, verbose, delay)
+        scan_port(host, port, timeout, open_ports, verbose, delay, s)
         port_queue.task_done()
+    s.close()
         
 ##this function sets up the queue, fills it with the range of ports to be scanned, creates a pool of worker threads, and starts them##
 
 def port_scanner(host, start_port, end_port, timeout, max_threads, verbose, delay):
+    """
+    The main port scanning function using multithreading.
+
+    :param host: The target host's IP or hostname.
+    :param start_port: The starting port number.
+    :param end_port: The ending port number.
+    :param timeout: Timeout for each port scan.
+    :param max_threads: The maximum number of threads to use.
+    :param verbose: Flag to enable verbose output.
+    :param delay: Delay between scans for rate limiting.
+    :return: A list of open ports.
+    """
     open_ports = []
     port_queue = Queue()
-    for port in range(start_port, end_port+1):
+    for port in range(start_port, end_port + 1):
         port_queue.put(port)
         
     
@@ -63,6 +96,14 @@ def port_scanner(host, start_port, end_port, timeout, max_threads, verbose, dela
 
 ##A function to save the results to a specific file##
 def save_results(host, open_ports, output_file, file_format):
+    """
+    Save the scan results to a file in JSON or CSV format.
+
+    :param host: The target host's IP or hostname.
+    :param open_ports: A list of open ports.
+    :param output_file: The file path to save the results.
+    :param file_format: The format of the output file ('json' or 'csv').
+    """
     if file_format == 'json':
         with open(output_file, 'w') as f:
             json.dump({"host": host, "open_ports": open_ports}, f)
@@ -75,6 +116,9 @@ def save_results(host, open_ports, output_file, file_format):
 
 
 def main():
+    """
+    Main function to handle argument parsing and initiate the port scanning.
+    """
     parser = argparse.ArgumentParser(description="A simple multi-threaded port scanner.")
     parser.add_argument("host", help="Host to scan.")
     parser.add_argument("start_port", type=int, help="Start of the port range to scan.")
