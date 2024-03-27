@@ -29,13 +29,15 @@ Replace `[options]` with command-line arguments to customize the behavior.
   - Place your Pushbullet API key in the script. 🔐
   - Ensure the `Reminder to Drink Water.txt` file with quotes is in the same directory. 📝
   - Run locally or set up on PythonAnywhere for automated scheduling. 🌐
-  **Usage:** 
+
+- **Usage:** 
 Edit the script to include your Pushbullet API key and run:
 `python water_reminder.py`
 
 ### 3. Image Resizer 📸
 
 - **Description**: Resizes images in the current directory to a specified size and saves them in a designated output folder. 🔄
+
 - **Usage**: Run the script and follow the prompts to specify image size and output folder:
 `python image_resizer.py`
 
@@ -47,6 +49,7 @@ Edit the script to include your Pushbullet API key and run:
   - **Voice Customization**: Choose from available voices and accents. 🗣️
   - **Audio Quality Settings**: Set the audio format and bitrate for the output file. 🎚️
 - **Dependencies**: `pdfplumber`, `pyttsx3`, and `tqdm`. 🛠️
+
 **Usage:** 
 Run the script and follow the prompts to specify the PDF file and output settings:
 `python pdf_to_audio_converter.py`
