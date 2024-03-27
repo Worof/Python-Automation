@@ -17,7 +17,9 @@ This project consists of several Python scripts 📜 designed to automate variou
   - **Security Features**: Prevent accidental moves of sensitive files with confirmation steps for certain types or directories. 🔒
   - **Undo Functionality**: Revert your last file organization operation, restoring files to their original locations. ⏪
 
-- **Usage**: Run the script in a directory to auto-sort all files into categorized folders. Use command-line arguments to customize behavior. 🏃‍♂️
+- **Usage**: Navigate to the directory containing the script and run🏃‍♂️: 
+`python file_organizer.py [options]`
+Replace `[options]` with command-line arguments to customize the behavior.
 
 ### 2. Water Reminder 💦
 
@@ -27,11 +29,15 @@ This project consists of several Python scripts 📜 designed to automate variou
   - Place your Pushbullet API key in the script. 🔐
   - Ensure the `Reminder to Drink Water.txt` file with quotes is in the same directory. 📝
   - Run locally or set up on PythonAnywhere for automated scheduling. 🌐
+  **Usage:** 
+Edit the script to include your Pushbullet API key and run:
+`python water_reminder.py`
 
 ### 3. Image Resizer 📸
 
 - **Description**: Resizes images in the current directory to a specified size and saves them in a designated output folder. 🔄
-- **Usage**: Input the desired image size and output folder when prompted. 🎚️
+- **Usage**: Run the script and follow the prompts to specify image size and output folder:
+`python image_resizer.py`
 
 ### 4. PDF to Audio Converter 📖🔊
 
@@ -40,8 +46,10 @@ This project consists of several Python scripts 📜 designed to automate variou
   - **User Input for File Names**: Specify PDF and output audio file names. ✍️
   - **Voice Customization**: Choose from available voices and accents. 🗣️
   - **Audio Quality Settings**: Set the audio format and bitrate for the output file. 🎚️
-- **Usage**: Convert each page of the PDF into spoken words, saving as an MP3 file. 📚➡️🔉
 - **Dependencies**: `pdfplumber`, `pyttsx3`, and `tqdm`. 🛠️
+**Usage:** 
+Run the script and follow the prompts to specify the PDF file and output settings:
+`python pdf_to_audio_converter.py`
 
 ### Running on PythonAnywhere 🐍☁️
 
